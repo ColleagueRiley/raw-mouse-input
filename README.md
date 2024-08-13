@@ -3,7 +3,7 @@
 When you create an application that locks the cursor, such as a game with a first-person camera, it's important to be able to disable the cursor.
 This means locking the cursor in the middle of the screen and getting raw input. 
 
-The only alternative to this method would be a hack that pulls the mouse back to the center of the window when this moves. However, this is a hack so it can be buggy
+The only alternative to this method would be a hack that pulls the mouse back to the center of the window when it moves. However, this is a hack so it can be buggy
 and does not work on all OSes. Therefore, it's important to properly lock the mouse by using raw input. 
 
 This tutorial explains how RGFW handles raw mouse input so you can understand how to implement it yourself. 
@@ -11,14 +11,14 @@ This tutorial explains how RGFW handles raw mouse input so you can understand ho
 ## Overview 
 A quick overview of the steps required
 
-1. lock cursor (if required)
+1. lock cursor
 2. center the cursor
 3. enable raw input
 4. handle raw input
 5. disable raw input
 6. unlock cursor
 
-When the user asks RGFW to hold the cursor RGFW enables a bitmask that says the cursor is held.
+When the user asks RGFW to hold the cursor, RGFW enables a bit flag that says the cursor is held.
 
 ```c
 win->_winArgs |= RGFW_HOLD_MOUSE;
@@ -32,7 +32,7 @@ On X11 the cursor should be locked by grabbing it via `XGrabPointer`
 XGrabPointer(display, window, True, PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
 ```
 
-This gives the window full control of the pointer, thereby locking it to the window. 
+This gives the window full control of the pointer.
 
 On Windows, ClipCursor locks the cursor to a specific rect on the screen.
 This means we must find the window rectangle on the screen and then clip the mouse to that rectangle. 
@@ -51,7 +51,7 @@ ClipCursor(&clipRect);
 ```
 
 
-On MacOS and Emscripten the function to enable rawinput also locks the cursor. So I'll get to its function on step 4.
+On MacOS and Emscripten the function to enable raw input also locks the cursor. So I'll get to its function in step 4.
 
 ## Step 2 (center the cursor)
 After the cursor is locked, it should be centered in the middle of the screen. 
@@ -122,7 +122,7 @@ emscripten_request_pointerlock("#canvas", 1);
 
 ## Step 4 (handle raw input events)
 
-These all happen during event loops
+These all happen during event loops.
 
 
 For X11, you must handle the normal MotionNotify, manually converting the input to raw input.
@@ -238,7 +238,7 @@ EM_BOOL Emscripten_on_mousemove(int eventType, const EmscriptenMouseEvent* e, vo
 ## Step 5 (disable raw input)
 Finally, RGFW allows disabling the raw input and unlocking the cursor to revert to normal mouse input. 
 
-First, RGFW disables the bitmask that.
+First, RGFW disables the bit flag.
 
 ```c
 win->_winArgs ^= RGFW_HOLD_MOUSE;
@@ -274,7 +274,7 @@ On X11, `XUngrabPoint` can be used to unlock the cursor.
 XUngrabPointer(display, CurrentTime);
 ```
 
-On Windows, pass a NULL rectangle pointer to unlock the cursor.
+On Windows, pass a NULL rectangle pointer to ClipCursor inorder to the cursor.
 
 ```c
 ClipCursor(NULL);
