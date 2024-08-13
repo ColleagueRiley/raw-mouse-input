@@ -1,5 +1,8 @@
 # RGFW Under the Hood: Raw Mouse Input and Mouse Locking
 ## Introduction 
+RGFW is my lightweight single-header windowing library, its source code can be found [here](https://github.com/ColleagueRiley/RGFW). 
+This tutorial is based on its source code. 
+
 When you create an application that locks the cursor, such as a game with a first-person camera, it's important to be able to disable the cursor.
 This means locking the cursor in the middle of the screen and getting raw input. 
 
