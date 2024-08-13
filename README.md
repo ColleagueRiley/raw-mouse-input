@@ -29,7 +29,7 @@ win->_winArgs |= RGFW_HOLD_MOUSE;
 
 ## Step 1 (Lock Cursor) 
 
-On X11 the cursor should be locked by grabbing it via `XGrabPointer` 
+On X11 the cursor should be locked by grabbing it via [`XGrabPointer`](https://tronche.com/gui/x/xlib/input/XGrabPointer.html)
 
 ```c
 XGrabPointer(display, window, True, PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
@@ -37,8 +37,10 @@ XGrabPointer(display, window, True, PointerMotionMask, GrabModeAsync, GrabModeAs
 
 This gives the window full control of the pointer.
 
-On Windows, ClipCursor locks the cursor to a specific rect on the screen.
+On Windows, [ClipCursor](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clipcursor) locks the cursor to a specific rect on the screen.
 This means we must find the window rectangle on the screen and then clip the mouse to that rectangle. 
+
+Also using: [https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect](GetClientRect) and [https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clienttoscreen](ClientToScreen)
 
 ```c
 //First get the window size (the RGFW_window struct also includes this information, but using this ensures it's correct)
@@ -69,13 +71,13 @@ XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height 
 ```
 
 
-On Windows, SetCursorPos is used
+On Windows, [SetCursorPos](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursorpos) is used
 
 ```c
 SetCursorPos(window_x + (window_width / 2), window_y + (window_height / 2));
 ```
 
-On MacOS, CGWarpMouseCursorPosition is used
+On MacOS, [CGWarpMouseCursorPosition](https://developer.apple.com/documentation/coregraphics/1456387-cgwarpmousecursorposition) is used
 
 ```c
 CGWarpMouseCursorPosition(window_x + (window_width / 2), window_y + (window_height / 2));
@@ -85,7 +87,7 @@ On Emscripten, RGFW does not move the mouse.
 
 ## Step 3 (enable raw input)
 
-With X11, XI is used to enable raw input
+With X11, [XI](https://www.x.org/archive/X11R7.5/doc/man/man3/XISelectEvents.3.html) is used to enable raw input
 
 ```c
 // mask for XI and set mouse for raw mouse input ("RawMotion")
@@ -103,14 +105,14 @@ XISelectEvents(display, XDefaultRootWindow(display), &em, 1);
 ```
 
 
-On Windows, you need to set up the RAWINPUTDEVICE structure and enable it with `RegisterRawInputDevices`
+On Windows, you need to set up the RAWINPUTDEVICE structure and enable it with [`RegisterRawInputDevices`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerrawinputdevices)
 
 ```c
 const RAWINPUTDEVICE id = { 0x01, 0x02, 0, window };
 RegisterRawInputDevices(&id, 1, sizeof(id));
 ```
 
-On MacOS you only need to run `CGAssociateMouseAndMouseCursorPosition`
+On MacOS you only need to run [`CGAssociateMouseAndMouseCursorPosition`](https://developer.apple.com/documentation/coregraphics/1454486-cgassociatemouseandmousecursorpo)
 This also locks the cursor by disassociating the mouse cursor and the mouse movement 
 
 ```c
@@ -129,7 +131,7 @@ These all happen during event loops.
 
 
 For X11, you must handle the normal MotionNotify, manually converting the input to raw input.
-To check for raw mouse input events, you need to use GenericEvent.
+To check for raw mouse input events, you need to use [GenericEvent](https://www.x.org/releases/X11R7.6/doc/xextproto/geproto.html).
 
 ```c
 switch (E.type) {
@@ -150,15 +152,15 @@ switch (E.type) {
 	case GenericEvent: {
 		/* MotionNotify is used for mouse events if the mouse isn't held */                
 		if (!(win->_winArgs & RGFW_HOLD_MOUSE)) {
-			XFreeEventData(win->src.display, &E.xcookie);
+			XFreeEventData(display, &E.xcookie);
 			break;
 		}
 			
-		XGetEventData(win->src.display, &E.xcookie);
+		XGetEventData(display, &E.xcookie);
 		if (E.xcookie.evtype == XI_RawMotion) {
 			XIRawEvent *raw = (XIRawEvent *)E.xcookie.data;
 			if (raw->valuators.mask_len == 0) {
-				XFreeEventData(win->src.display, &E.xcookie);
+				XFreeEventData(display, &E.xcookie);
 				break;
 			}
 			
@@ -176,12 +178,12 @@ switch (E.type) {
 			win->event.point = RGFW_POINT((u32)-deltaX, (u32)-deltaY);
 		}
 		
-		XFreeEventData(win->src.display, &E.xcookie);
+		XFreeEventData(display, &E.xcookie);
 		break;
 	}
 ```
 
-On Windows, you only need to handle WM_INPUT events and check for raw motion input
+On Windows, you only need to handle [WM_INPUT](https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-input) events and check for raw motion input
 
 ```c
 switch (msg.message) {
@@ -207,7 +209,7 @@ switch (msg.message) {
 	}
 ```
 
-On macOS, you can check mouse input as normal while using deltaX and deltaY to fetch and flip the mouse point 
+On macOS, you can check mouse input as [normal](https://developer.apple.com/documentation/appkit/nsevent/eventtype/mousemoved) while using deltaX and deltaY to fetch and flip the mouse point 
 
 ```c
 switch (objc_msgSend_uint(e, sel_registerName("type"))) {
@@ -226,7 +228,7 @@ switch (objc_msgSend_uint(e, sel_registerName("type"))) {
 		win->event.point = RGFW_POINT((u32) -p.x, (u32) -p.y));
 ```
 
-On Emscripten the mouse events can be checked as they normally are, except we're going to use and flip e->movementX/Y
+On Emscripten the mouse events can be checked as they [normally](Emscripten_on_mousemove) are, except we're going to use and flip e->movementX/Y
 
 ```c
 EM_BOOL Emscripten_on_mousemove(int eventType, const EmscriptenMouseEvent* e, void* userData) {
@@ -257,7 +259,7 @@ em.deviceid = XIAllMasterDevices;
 
 em.mask_len = sizeof(mask);
 em.mask = mask;
-XISelectEvents(win->src.display, XDefaultRootWindow(win->src.display), &em, 1);
+XISelectEvents(display, XDefaultRootWindow(display), &em, 1);
 ```
 
 For Windows, you pass a raw input device structure with `RIDEV_REMOVE` to disable the raw input.
@@ -271,7 +273,7 @@ On MacOS and Emscripten, unlocking the cursor also disables raw input.
 
 ## Step 6 (unlock cursor)
 
-On X11, `XUngrabPoint` can be used to unlock the cursor.
+On X11, [`XUngrabPoint`](https://tronche.com/gui/x/xlib/input/XUngrabPointer.html) can be used to unlock the cursor.
 
 ```c
 XUngrabPointer(display, CurrentTime);
@@ -289,7 +291,7 @@ On MacOS, associating the mouse cursor and the mouse movement will disable raw i
 CGAssociateMouseAndMouseCursorPosition(1);
 ```
 
-On Emscripten, exiting the pointer lock will unlock the cursor and disable raw input.
+On Emscripten, [exiting the pointer lock](https://emscripten.org/docs/api_reference/html5.h.html#c.emscripten_exit_pointerlock) will unlock the cursor and disable raw input.
 
 ```c
 emscripten_exit_pointerlock();
