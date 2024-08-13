@@ -62,8 +62,6 @@ RGFW uses an RGFW function called `RGFW_window_moveMouse` to move the mouse in t
 On X11, XWrapPointer can be used to move the cursor to the center of the window 
 
 ```c
-int x = (win->r.w / 2);
-int y = (win->r.h / 2);
 XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 ```
 
@@ -139,7 +137,10 @@ switch (E.type) {
 				/* convert E.xmotion to rawinput by substracting the previous point */
                 win->event.point.x = win->_lastMousePoint.x - E.xmotion.x;
 				win->event.point.y = win->_lastMousePoint.y - E.xmotion.y;
-			}
+			
+                // the mouse must be moved back to the center when it moves
+                XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
+            }
         
 			break;
 
@@ -166,7 +167,9 @@ switch (E.type) {
 					deltaX += raw->raw_values[0];
 				if (XIMaskIsSet(raw->valuators.mask, 1) != 0)
 					deltaY += raw->raw_values[1];
-
+                
+                // the mouse must be moved back to the center when it moves
+                XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 				win->event.point = RGFW_POINT((u32)-deltaX, (u32)-deltaY);
             }
 
@@ -249,7 +252,7 @@ unsigned char mask[] = { 0 };
 XIEventMask em;
 em.deviceid = XIAllMasterDevices;
 
-m.mask_len = sizeof(mask);
+em.mask_len = sizeof(mask);
 em.mask = mask;
 XISelectEvents(win->src.display, XDefaultRootWindow(win->src.display), &em, 1);
 ```
