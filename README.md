@@ -62,7 +62,7 @@ On MacOS and Emscripten the function to enable raw input also locks the cursor. 
 After the cursor is locked, it should be centered in the middle of the screen. 
 This ensures the cursor is locked in the right place and won't mess with anything else. 
 
-RGFW uses an RGFW function called `RGFW_window_moveMouse` to move the mouse in the middle of the window. 
+RGFW uses an RGFW function called [`RGFW_window_moveMouse`](https://github.com/ColleagueRiley/RGFW/blob/e068aa58c71668fbce115320b66a9e8f9b868085/RGFW.h#L752) to move the mouse in the middle of the window. 
 
 On X11, XWrapPointer can be used to move the cursor to the center of the window 
 
