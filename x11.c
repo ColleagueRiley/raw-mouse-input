@@ -13,8 +13,7 @@ int main(void) {
 	unsigned int window_height = 200;
 
 	Display* display = XOpenDisplay(NULL);  
-    Window window = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 400, 400, window_width, window_height, 1,
-                                 BlackPixel(display, DefaultScreen(display)), WhitePixel(display, DefaultScreen(display)));
+    Window window = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 400, 400, window_width, window_height, 1, BlackPixel(display, DefaultScreen(display)), WhitePixel(display, DefaultScreen(display)));
  
     XSelectInput(display, window, ExposureMask | KeyPressMask);
     XMapWindow(display, window);
