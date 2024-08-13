@@ -29,7 +29,7 @@ win->_winArgs |= RGFW_HOLD_MOUSE;
 
 ## Step 1 (Lock Cursor) 
 
-On X11 the cursor should be locked by grabbing it via [`XGrabPointer`](https://tronche.com/gui/x/xlib/input/XGrabPointer.html)
+On X11 the cursor can be locked by grabbing it via [`XGrabPointer`](https://tronche.com/gui/x/xlib/input/XGrabPointer.html)
 
 ```c
 XGrabPointer(display, window, True, PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
