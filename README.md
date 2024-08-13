@@ -103,7 +103,7 @@ XISelectEvents(display, XDefaultRootWindow(display), &em, 1);
 On windows, you need to set up the RAWINPUTDEVICE structure and enable it with `RegisterRawInputDevices`
 
 ```c
-const RAWINPUTDEVICE id = { 0x01, 0x02, 0, win->src.window };
+const RAWINPUTDEVICE id = { 0x01, 0x02, 0, window };
 RegisterRawInputDevices(&id, 1, sizeof(id));
 ```
 
