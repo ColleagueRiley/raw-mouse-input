@@ -64,7 +64,7 @@ This ensures the cursor is locked in the right place and won't mess with anythin
 
 RGFW uses an RGFW function called [`RGFW_window_moveMouse`](https://github.com/ColleagueRiley/RGFW/blob/e068aa58c71668fbce115320b66a9e8f9b868085/RGFW.h#L752) to move the mouse in the middle of the window. 
 
-On X11, XWrapPointer can be used to move the cursor to the center of the window 
+On X11, [`XWarpPointer`](https://tronche.com/gui/x/xlib/input/XWarpPointer.html) can be used to move the cursor to the center of the window 
 
 ```c
 XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
