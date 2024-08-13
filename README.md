@@ -310,42 +310,40 @@ emscripten_exit_pointerlock();
 #include <X11/extensions/XInput2.h>
 
 int main(void) {
-    unsigned int window_width = 200;
+	unsigned int window_width = 200;
 	unsigned int window_height = 200;
-
+	
 	Display* display = XOpenDisplay(NULL);  
-    Window window = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 400, 400, window_width, window_height, 1,
-                                 BlackPixel(display, DefaultScreen(display)), WhitePixel(display, DefaultScreen(display)));
- 
-    XSelectInput(display, window, ExposureMask | KeyPressMask);
-    XMapWindow(display, window);
+	Window window = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 400, 400, window_width, window_height, 1, BlackPixel(display, DefaultScreen(display)), WhitePixel(display, DefaultScreen(display)));
+	
+	XSelectInput(display, window, ExposureMask | KeyPressMask);
+	XMapWindow(display, window);
 	
 	XGrabPointer(display, window, True, PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
 	
 	XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
-
+	
 	// mask for XI and set mouse for raw mouse input ("RawMotion")
 	unsigned char mask[XIMaskLen(XI_RawMotion)] = { 0 };
 	XISetMask(mask, XI_RawMotion);
-
+	
 	// set up X1 struct
 	XIEventMask em;
 	em.deviceid = XIAllMasterDevices;
 	em.mask_len = sizeof(mask);
 	em.mask = mask;
-
+	
 	// enable raw input using the structure
 	XISelectEvents(display, XDefaultRootWindow(display), &em, 1);
-
+	
 	Bool rawInput = True;
 	XPoint point;
 	XPoint _lastMousePoint;
-
+	
 	XEvent event;
-
-    for (;;) {
-        XNextEvent(display, &event);
-		
+	
+	for (;;) {
+		XNextEvent(display, &event);
 		switch (event.type) {
 			case MotionNotify:
 				/* check if mouse hold is enabled */
@@ -356,9 +354,9 @@ int main(void) {
 					printf("rawinput %i %i\n", point.x, point.y);
 					XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 				}
-        
-				break;
 
+				break;
+	
 			case GenericEvent: {
 				/* MotionNotify is used for mouse events if the mouse isn't held */                
 				if (rawInput == False) {
@@ -373,45 +371,45 @@ int main(void) {
 						XFreeEventData(display, &event.xcookie);
 						break;
 					}
-
+	
 					double deltaX = 0.0f; 
 					double deltaY = 0.0f;
-
+	
 					/* check if relative motion data exists where we think it does */
 					if (XIMaskIsSet(raw->valuators.mask, 0) != 0)
 						deltaX += raw->raw_values[0];
 					if (XIMaskIsSet(raw->valuators.mask, 1) != 0)
 						deltaY += raw->raw_values[1];
-
+	
 					point = (XPoint){-deltaX, -deltaY};
 					XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
-
+	
 					printf("rawinput %i %i\n", point.x, point.y);
 				}	
-
+	
 				XFreeEventData(display, &event.xcookie);
 				break;
 			}
 			case KeyPress:
 				if (rawInput == False)
 					break;
-
+	
 				unsigned char mask[] = { 0 };
 				XIEventMask em;
 				em.deviceid = XIAllMasterDevices;
-
+	
 				em.mask_len = sizeof(mask);
 				em.mask = mask;
 				XISelectEvents(display, XDefaultRootWindow(display), &em, 1);
 				XUngrabPointer(display, CurrentTime);
-
+	
 				printf("Raw input disabled\n");
 				break;
 			default: break;
 		}
-    }
- 
-    XCloseDisplay(display);
+	}
+	
+	XCloseDisplay(display);
  }
 ```
 
