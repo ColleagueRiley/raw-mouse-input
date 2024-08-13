@@ -37,10 +37,10 @@ XGrabPointer(display, window, True, PointerMotionMask, GrabModeAsync, GrabModeAs
 
 This gives the window full control of the pointer.
 
-On Windows, [ClipCursor](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clipcursor) locks the cursor to a specific rect on the screen.
+On Windows, [`ClipCursor`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clipcursor) locks the cursor to a specific rect on the screen.
 This means we must find the window rectangle on the screen and then clip the mouse to that rectangle. 
 
-Also using: [https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect](GetClientRect) and [https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clienttoscreen](ClientToScreen)
+Also using: [`GetClientRect`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect])) and [ClientToScreen](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clienttoscreen)
 
 ```c
 //First get the window size (the RGFW_window struct also includes this information, but using this ensures it's correct)
@@ -71,13 +71,13 @@ XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height 
 ```
 
 
-On Windows, [SetCursorPos](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursorpos) is used
+On Windows, [`SetCursorPos`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setcursorpos) is used
 
 ```c
 SetCursorPos(window_x + (window_width / 2), window_y + (window_height / 2));
 ```
 
-On MacOS, [CGWarpMouseCursorPosition](https://developer.apple.com/documentation/coregraphics/1456387-cgwarpmousecursorposition) is used
+On MacOS, [`CGWarpMouseCursorPosition`](https://developer.apple.com/documentation/coregraphics/1456387-cgwarpmousecursorposition) is used
 
 ```c
 CGWarpMouseCursorPosition(window_x + (window_width / 2), window_y + (window_height / 2));
@@ -131,7 +131,7 @@ These all happen during event loops.
 
 
 For X11, you must handle the normal MotionNotify, manually converting the input to raw input.
-To check for raw mouse input events, you need to use [GenericEvent](https://www.x.org/releases/X11R7.6/doc/xextproto/geproto.html).
+To check for raw mouse input events, you need to use [`GenericEvent`](https://www.x.org/releases/X11R7.6/doc/xextproto/geproto.html).
 
 ```c
 switch (E.type) {
@@ -183,7 +183,7 @@ switch (E.type) {
 	}
 ```
 
-On Windows, you only need to handle [WM_INPUT](https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-input) events and check for raw motion input
+On Windows, you only need to handle [`WM_INPUT`](https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-input) events and check for raw motion input
 
 ```c
 switch (msg.message) {
