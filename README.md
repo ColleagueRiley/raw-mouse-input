@@ -249,7 +249,7 @@ First, RGFW disables the bit flag.
 win->_winArgs ^= RGFW_HOLD_MOUSE;
 ```
 
-In X11, first, you must create a structure with a blank mouse and ask for the `XIAllMasterDevices` devices.
+In X11, first, you must create a structure with a blank mask.
 This will disable raw input.
 
 ```c
