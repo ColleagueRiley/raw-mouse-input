@@ -40,7 +40,7 @@ This gives the window full control of the pointer.
 On Windows, [`ClipCursor`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clipcursor) locks the cursor to a specific rect on the screen.
 This means we must find the window rectangle on the screen and then clip the mouse to that rectangle. 
 
-Also using: [`GetClientRect`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect])) and [ClientToScreen](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clienttoscreen)
+Also using: [`GetClientRect`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclientrect])) and [`ClientToScreen`](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-clienttoscreen)
 
 ```c
 //First get the window size (the RGFW_window struct also includes this information, but using this ensures it's correct)
