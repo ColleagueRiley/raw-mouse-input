@@ -51,7 +51,6 @@ int main(void) {
 					point.x = _lastMousePoint.x - event.xmotion.x;
 					point.y = _lastMousePoint.y - event.xmotion.y;
 					printf("rawinput %i %i\n", point.x, point.y);
-					XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 				}
 
 				break;
