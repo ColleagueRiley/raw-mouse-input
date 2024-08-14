@@ -279,7 +279,7 @@ On X11, [`XUngrabPoint`](https://tronche.com/gui/x/xlib/input/XUngrabPointer.htm
 XUngrabPointer(display, CurrentTime);
 ```
 
-On Windows, pass a NULL rectangle pointer to ClipCursor inorder to the cursor.
+On Windows, pass a NULL rectangle pointer to ClipCursor to unclip the cursor.
 
 ```c
 ClipCursor(NULL);
