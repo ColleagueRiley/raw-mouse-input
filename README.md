@@ -201,15 +201,14 @@ switch (msg.message) {
 		//Make sure raw data is valid 
 		if (raw->header.dwType != RIM_TYPEMOUSE || (raw->data.mouse.lLastX == 0 && raw->data.mouse.lLastY == 0) )
 			break;
-			
-		//The data is flipped  
-		win->event.point.x = -raw->data.mouse.lLastX;
-		win->event.point.y = -raw->data.mouse.lLastY;
+		
+		win->event.point.x = raw->data.mouse.lLastX;
+		win->event.point.y = raw->data.mouse.lLastY;
 		break;
 	}
 ```
 
-On macOS, you can check mouse input as [normal](https://developer.apple.com/documentation/appkit/nsevent/eventtype/mousemoved) while using deltaX and deltaY to fetch and flip the mouse point 
+On macOS, you can check mouse input as [normal](https://developer.apple.com/documentation/appkit/nsevent/eventtype/mousemoved) while using deltaX and deltaY to fetch the mouse point 
 
 ```c
 switch (objc_msgSend_uint(e, sel_registerName("type"))) {
@@ -223,20 +222,18 @@ switch (objc_msgSend_uint(e, sel_registerName("type"))) {
                 NSPoint p;
 		p.x = ((CGFloat(*)(id, SEL))abi_objc_msgSend_fpret)(e, sel_registerName("deltaX"));
 		p.y = ((CGFloat(*)(id, SEL))abi_objc_msgSend_fpret)(e, sel_registerName("deltaY"));
-				
-                //The raw input must be flipped for macOS as well, and cast for RGFW's event data
-		win->event.point = RGFW_POINT((u32) -p.x, (u32) -p.y));
+
+		win->event.point = RGFW_POINT((i32) p.x, (i32) p.y));
 ```
 
-On Emscripten the mouse events can be checked as they [normally](Emscripten_on_mousemove) are, except we're going to use and flip e->movementX/Y
+On Emscripten the mouse events can be checked as they [normally](Emscripten_on_mousemove) are, except we're going to use e->movementX/Y
 
 ```c
 EM_BOOL Emscripten_on_mousemove(int eventType, const EmscriptenMouseEvent* e, void* userData) {
 	if ((RGFW_root->_winArgs & RGFW_HOLD_MOUSE) == 0) // if the mouse is not held
         	return
 
-	//The raw input must be flipped for Emscripten as well
-    	RGFW_point p = RGFW_POINT(-e->movementX, -e->movementY);
+    	RGFW_point p = RGFW_POINT(e->movementX, e->movementY);
 }
 ```
 
@@ -488,10 +485,9 @@ int main() {
 					// make sure raw data is valid 
 					if (raw->header.dwType != RIM_TYPEMOUSE || (raw->data.mouse.lLastX == 0 && raw->data.mouse.lLastY == 0) )
 						break;
-					
-					// the data is flipped  
-					point.x = -raw->data.mouse.lLastX;
-					point.y = -raw->data.mouse.lLastY;
+
+					point.x = raw->data.mouse.lLastX;
+					point.y = raw->data.mouse.lLastY;
 					printf("raw input: %i %i\n", point.x, point.y);
 					break;
 				}
