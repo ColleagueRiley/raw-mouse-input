@@ -142,9 +142,6 @@ switch (E.type) {
 			/* convert E.xmotion to raw input by subtracting the previous point */
 			win->event.point.x = win->_lastMousePoint.x - E.xmotion.x;
 			win->event.point.y = win->_lastMousePoint.y - E.xmotion.y;
-			
-			//The mouse must be moved back to the center when it moves
-			XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 		}
         
 		break;
@@ -351,7 +348,6 @@ int main(void) {
 					point.x = _lastMousePoint.x - event.xmotion.x;
 					point.y = _lastMousePoint.y - event.xmotion.y;
 					printf("rawinput %i %i\n", point.x, point.y);
-					XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 				}
 
 				break;
