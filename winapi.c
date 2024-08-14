@@ -71,8 +71,8 @@ int main() {
 						break;
 					
 					// the data is flipped  
-					point.x = -raw->data.mouse.lLastX;
-					point.y = -raw->data.mouse.lLastY;
+					point.x = raw->data.mouse.lLastX;
+					point.y = raw->data.mouse.lLastY;
 					printf("raw input: %i %i\n", point.x, point.y);
 					break;
 				}
