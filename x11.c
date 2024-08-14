@@ -80,7 +80,7 @@ int main(void) {
 					if (XIMaskIsSet(raw->valuators.mask, 1) != 0)
 						deltaY += raw->raw_values[1];
 	
-					point = (XPoint){-deltaX, -deltaY};
+					point = (XPoint){deltaX, deltaY};
 					XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 	
 					printf("rawinput %i %i\n", point.x, point.y);
