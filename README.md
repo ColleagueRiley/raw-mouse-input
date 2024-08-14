@@ -175,7 +175,7 @@ switch (E.type) {
 		
 			//The mouse must be moved back to the center when it moves
 			XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
-			win->event.point = RGFW_POINT((u32)-deltaX, (u32)-deltaY);
+			win->event.point = RGFW_POINT(deltaX, deltaY);
 		}
 		
 		XFreeEventData(display, &E.xcookie);
@@ -380,7 +380,7 @@ int main(void) {
 					if (XIMaskIsSet(raw->valuators.mask, 1) != 0)
 						deltaY += raw->raw_values[1];
 	
-					point = (XPoint){-deltaX, -deltaY};
+					point = (XPoint){deltaX, deltaY};
 					XWarpPointer(display, None, window, 0, 0, 0, 0, window_width / 2, window_height / 2);
 	
 					printf("rawinput %i %i\n", point.x, point.y);
